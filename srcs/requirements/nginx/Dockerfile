@@ -1,0 +1,11 @@
+FROM debian:bullseye
+
+RUN apt-get update -y && apt-get upgrade -y
+RUN apt-get install -y nginx openssl
+
+COPY ./tools/entrypoint.sh /tmp/entrypoint.sh
+RUN chmod +x /tmp/entrypoint.sh
+
+EXPOSE 443
+
+ENTRYPOINT ["sh", "/tmp/entrypoint.sh"]
