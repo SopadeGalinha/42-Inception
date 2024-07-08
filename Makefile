@@ -6,15 +6,15 @@
 #    By: jhogonca <jhogonca@student.42porto.com>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/15 09:51:34 by jhogonca          #+#    #+#              #
-#    Updated: 2024/07/08 18:23:31 by jhogonca         ###   ########.fr        #
+#    Updated: 2024/07/08 18:56:56 by jhogonca         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME			= Inception
 USER			= jhogonca
 
-SYSTEM_USER		= $(shell echo $$USER)
-DOCKER_CONFIG 	= $(shell echo $$HOME/.docker)
+SYSTEM_USER		= $(shell whoami)
+DOCKER_CONFIG 	= $(shell echo $$HOME)/.docker
 
 SRC_DIR			= ./srcs
 VOL_DIR			= /home/$(USER)/data
@@ -58,28 +58,15 @@ down:
 
 clean:		down
 			@echo "${YELLOW}-----Removing Docker Volumes-----${NC}"
-			docker volume rm ${WP_NAME}
-			sudo rm -rf /home/$(USER)/data/${WP_NAME}
-			docker volume rm ${MDB_NAME}
-			sudo rm -rf /home/$(USER)/data/${MDB_NAME}
+#			docker volume rm ${WP_NAME}
+#			sudo rm -rf /home/$(USER)/data/${WP_NAME}
+#			docker volume rm ${MDB_NAME}
+#			sudo rm -rf /home/$(USER)/data/${MDB_NAME}
 			@echo "${RED}-----Volumes Removed-----${NC}"
 			@echo "${YELLOW}-----Removing domain name from hosts file-----${NC}"
 			sudo sed -i '/127\.0\.0\.1\t${USER}\.42\.fr/d' /etc/hosts
 			@echo "${RED}-----Hosts file edited-----${NC}"
-
-fclean:
-	@docker compose -f ./srcs/docker-compose.yml down
-	@docker system prune -af
-	@if [ -n "$$(docker ps -qa)" ]; then docker stop $$(docker ps -qa); fi
-	@if [ -n "$$(docker ps -qa)" ]; then docker rm -f $$(docker ps -qa); fi
-	@if [ -n "$$(docker images -q)" ]; then docker rmi -f $$(docker images -q); fi
-	@if [ -n "$$(docker volume ls -q)" ]; then docker volume rm $$(docker volume ls -q); fi
-	@if [ -n "$$(docker network ls --format '{{.Name}}' | grep -vE 'bridge|host|none')" ]; then \
-		docker network rm $$(docker network ls --format '{{.Name}}' | grep -vE 'bridge|host|none'); \
-	fi
-	@docker system prune -af
-	@sudo rm -rf $(VOL_DIR)
-
+			@docker system prune -af
 
 re:			down all
 
@@ -111,10 +98,34 @@ compose:
 			sudo mv /home/${SYSTEM_USER}/.docker/cli-plugins/docker-compose /usr/local/lib/docker/cli-plugins/docker-compose
 			@echo "${GREEN}-----Docker Compose updated-----${NC}"
 
-PHONY:		all clean re prepare
+status:
+			@echo "$(BOLD)=== Docker Status ===$(NC)"
+			@echo "$(BOLD)Containers:$(NC)"
+			@docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"
+			@echo "$(BOLD)Volumes:$(NC)"
+			@docker volume ls
+			@echo "$(BOLD)Images:$(NC)"
+			@docker images
+			@echo "$(BOLD)Networks:$(NC)"
+			@docker network ls
+			@echo "$(BOLD)=== End of Docker Status ===$(NC)"
+
+fclean: clean
+			@if [ -n "$$(docker ps -qa)" ]; then docker stop $$(docker ps -qa); fi
+			@if [ -n "$$(docker ps -qa)" ]; then docker rm -f $$(docker ps -qa); fi
+			@if [ -n "$$(docker images -q)" ]; then docker rmi -f $$(docker images -q); fi
+			@if [ -n "$$(docker volume ls -q)" ]; then docker volume rm $$(docker volume ls -q); fi
+			@if [ -n "$$(docker network ls --format '{{.Name}}' | grep -vE 'bridge|host|none')" ]; then \
+				docker network rm $$(docker network ls --format '{{.Name}}' | grep -vE 'bridge|host|none'); \
+			fi
+			@docker system prune -af
+			@sudo rm -rf $(APP_PATH)
+
+PHONY:		all clean re prepare update compose status fclean
 
 # Colors
 RED = \033[0;31m
 GREEN = \033[0;32m
 YELLOW = \033[0;33m
 NC = \033[0m
+BOLD = \033[1m
