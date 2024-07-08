@@ -1,0 +1,78 @@
+# srcs/docker-compose.yml
+version: "3.8"
+
+# Volumes
+volumes:
+  mariadb:
+    name: mariadb
+    external: true
+  wordpress:
+    name: wordpress
+    external: true
+
+# Networks
+networks:
+  inception:
+    name: inception
+    driver: bridge
+
+# Services (Containers)
+services:
+  mariadb:
+    container_name: mariadb
+    image: mariadb:42
+    init: true
+    build:
+      context: ./requirements/mariadb
+      dockerfile: Dockerfile
+      args:
+        - MYSQL_DATABASE
+        - MYSQL_USER
+        - MYSQL_PASSWORD
+        - MYSQL_ROOT_PASSWORD
+    networks:
+      - inception
+    volumes:
+      - mariadb:/var/lib/mysql
+    restart: always
+
+  wordpress:
+    container_name: wordpress
+    image: wordpress:42
+    init: true
+    build:
+      context: ./requirements/wordpress
+      dockerfile: Dockerfile
+      args:
+        - MYSQL_DATABASE
+        - MYSQL_USER
+        - MYSQL_PASSWORD
+    networks:
+      - inception
+    volumes:
+      - wordpress:/var/www/html
+    restart: always
+    depends_on:
+      - mariadb
+
+  nginx:
+    container_name: nginx
+    image: nginx:42
+    init: true
+    build:
+      context: ./requirements/nginx
+      dockerfile: Dockerfile
+      args:
+        - DOMAIN_NAME
+        - CERTS_KEY
+        - CERTS_CRT
+    networks:
+      - inception
+    ports:
+      - "443:443"
+    volumes:
+      - wordpress:/var/www/html
+    restart: always
+    depends_on:
+      - mariadb
+      - wordpress
