@@ -1,4 +1,3 @@
-# srcs/requirements/wordpress/tools/entrypoint.sh
 #!/bin/bash
 
 # Enable Redis Cache after Database is ready

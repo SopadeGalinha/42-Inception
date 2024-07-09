@@ -1,4 +1,3 @@
-# srcs/docker-compose.yml
 version: "3.8"
 
 # Volumes
@@ -8,6 +7,9 @@ volumes:
     external: true
   wordpress:
     name: wordpress
+    external: true
+  static:
+    name: static
     external: true
 
 # Networks
@@ -72,7 +74,91 @@ services:
       - "443:443"
     volumes:
       - wordpress:/var/www/html
+      - static:/usr/share/nginx/html
     restart: always
     depends_on:
       - mariadb
       - wordpress
+      - static
+
+##################  BONUS  ##################
+  redis:
+    container_name: redis
+    image: redis:42
+    init: true
+    build:
+      context: ./requirements/bonus/redis-cache
+      dockerfile: Dockerfile
+    networks:
+      - inception
+    restart: always
+    depends_on:
+      - nginx
+
+  ftp:
+    container_name: ftp
+    image: ftp:42
+    init: true
+    build:
+      context: ./requirements/bonus/ftp-server
+      dockerfile: Dockerfile
+      args:
+        - FTP_USER
+        - FTP_PASSWORD
+    networks:
+      - inception
+    volumes:
+      - wordpress:/home/$FTP_USER/ftp
+    ports:
+      - "20:20"
+      - "21:21"
+      - "21000-21010:21000-21010"
+    restart: always
+    depends_on:
+      - nginx
+
+  static:
+    container_name: static
+    image: static:42
+    init: true
+    build:
+      context: ./requirements/bonus/static-website
+      dockerfile: Dockerfile
+    networks:
+      - inception
+    volumes:
+      - static:/usr/src/app
+    restart: always
+
+  adminer:
+    container_name: adminer
+    image: adminer:42
+    init: true
+    build:
+      context: ./requirements/bonus/adminer
+      dockerfile: Dockerfile
+    networks:
+      - inception
+    volumes:
+      - wordpress:/var/www/html
+    restart: always
+    depends_on:
+      - wordpress
+
+  cadvisor:
+    container_name: cadvisor
+    image: cadvisor:42
+    init: true
+    build:
+      context: ./requirements/bonus/cadvisor
+      dockerfile: Dockerfile
+    networks:
+      - inception
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    restart: always

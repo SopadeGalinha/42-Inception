@@ -1,15 +1,10 @@
-# srcs/requirements/nginx/Dockerfile
-
 # Base image
 FROM 		debian:bullseye
 
 # Define build arguments passed from docker-compose.yml
-ARG			USER
+ARG			DOMAIN_NAME
 ARG 		CERTS_KEY
 ARG			CERTS_CRT
-ARG			DOMAIN_NAME
-ARG			PROCESS_NAME
-ENV			SUBJECT="/C=PT/ST=Porto/L=OPO/O=42PT/OU=${PROCESS_NAME}/CN=${DOMAIN_NAME}"
 
 # Update and upgrade system & install Nginx and OpenSSL
 RUN 		apt -y update && apt -y upgrade
@@ -17,8 +12,11 @@ RUN 		apt -y install nginx openssl
 
 # Generate self-signed certificate
 RUN 		openssl req -x509 -sha256 -nodes \
-			-newkey rsa:4096 -days 365 \
-			-subj "${SUBJECT}" -keyout ${CERTS_KEY} -out ${CERTS_CRT}
+			-newkey rsa:4096 \
+			-days 365 \
+			-subj "/C=BR/ST=Sao Paulo/L=Sao Paulo/O=42SP/OU=Inception/CN=sopadegalinha.42.fr" \
+			-keyout ${CERTS_KEY} \
+			-out ${CERTS_CRT} 
 
 # Guarantee that Nginx is using TSLv1.3 
 RUN 		sed -i 's/ssl_protocols.*/ssl_protocols TLSv1.3;/' /etc/nginx/nginx.conf

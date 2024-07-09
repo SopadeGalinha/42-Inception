@@ -1,17 +1,5 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: jhogonca <jhogonca@student.42porto.com>    +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/02/15 09:51:34 by jhogonca          #+#    #+#              #
-#    Updated: 2024/07/08 18:56:56 by jhogonca         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 NAME			= Inception
-USER			= jhogonca
+USER			= sopadegalinha
 
 SYSTEM_USER		= $(shell whoami)
 DOCKER_CONFIG 	= $(shell echo $$HOME)/.docker
@@ -21,6 +9,7 @@ VOL_DIR			= /home/$(USER)/data
 
 WP_NAME			= wordpress
 MDB_NAME		= mariadb
+STAT_NAME		= static
 
 all:		volumes hosts up
 			@echo "\n"
@@ -37,6 +26,8 @@ volumes:
 			sudo docker volume create --driver local --opt type=none --opt device=${VOL_DIR}/${WP_NAME} --opt o=bind ${WP_NAME}
 			sudo mkdir -p ${VOL_DIR}/${MDB_NAME}
 			sudo docker volume create --driver local --opt type=none --opt device=${VOL_DIR}/${MDB_NAME} --opt o=bind ${MDB_NAME}
+			sudo mkdir -p ${VOL_DIR}/${STAT_NAME}
+			sudo docker volume create --driver local --opt type=none --opt device=${VOL_DIR}/${STAT_NAME} --opt o=bind ${STAT_NAME}
 			@echo "${GREEN}-----Volumes Created-----${NC}"
 
 hosts:
@@ -58,10 +49,10 @@ down:
 
 clean:		down
 			@echo "${YELLOW}-----Removing Docker Volumes-----${NC}"
-#			docker volume rm ${WP_NAME}
-#			sudo rm -rf /home/$(USER)/data/${WP_NAME}
-#			docker volume rm ${MDB_NAME}
-#			sudo rm -rf /home/$(USER)/data/${MDB_NAME}
+			docker volume rm ${WP_NAME}
+			sudo rm -rf /home/$(USER)/data/${WP_NAME}
+			docker volume rm ${MDB_NAME}
+			sudo rm -rf /home/$(USER)/data/${MDB_NAME}
 			@echo "${RED}-----Volumes Removed-----${NC}"
 			@echo "${YELLOW}-----Removing domain name from hosts file-----${NC}"
 			sudo sed -i '/127\.0\.0\.1\t${USER}\.42\.fr/d' /etc/hosts

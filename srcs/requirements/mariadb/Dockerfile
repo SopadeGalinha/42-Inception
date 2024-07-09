@@ -1,5 +1,3 @@
-# srcs/requirements/mariadb/Dockerfile
-
 # Base image
 FROM        debian:bullseye
 
@@ -18,9 +16,10 @@ RUN			mkdir -p /var/lib/mysql /var/run/mysqld
 RUN			chown -R mysql:mysql /var/lib/mysql /var/run/mysqld
 RUN			chmod 777 /var/run/mysqld
 
-# Copy the MariaDB configuration file
+# Copy the MariaDB configuration file and dump.sql file
 COPY        ./conf/mariadb.cnf /etc/mysql/mariadb.conf.d/
 RUN         chmod 644 /etc/mysql/mariadb.conf.d/mariadb.cnf
+COPY        ./conf/dump.sql /usr/local/bin/
 
 # Execute MariaDB Initialization script
 COPY        ./tools/init.sh /usr/local/bin/
