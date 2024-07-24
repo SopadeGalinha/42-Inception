@@ -9,7 +9,6 @@ VOL_DIR			= /home/$(USER)/data
 
 WP_NAME			= wordpress
 MDB_NAME		= mariadb
-STAT_NAME		= static
 
 all:		volumes hosts up
 			@echo "\n"
@@ -26,8 +25,6 @@ volumes:
 			sudo docker volume create --driver local --opt type=none --opt device=${VOL_DIR}/${WP_NAME} --opt o=bind ${WP_NAME}
 			sudo mkdir -p ${VOL_DIR}/${MDB_NAME}
 			sudo docker volume create --driver local --opt type=none --opt device=${VOL_DIR}/${MDB_NAME} --opt o=bind ${MDB_NAME}
-			sudo mkdir -p ${VOL_DIR}/${STAT_NAME}
-			sudo docker volume create --driver local --opt type=none --opt device=${VOL_DIR}/${STAT_NAME} --opt o=bind ${STAT_NAME}
 			@echo "${GREEN}-----Volumes Created-----${NC}"
 
 hosts:
