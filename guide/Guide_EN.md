@@ -50,9 +50,10 @@ Docker enhances the development lifecycle by enabling continuous integration and
 
 Both containers and virtual machines (VMs) are technologies used to create isolated environments for running applications. While they share some similarities, they differ in several fundamental ways.
 
-<div style="text-align:center; background-color:white; padding:10px;">
+<div style="text-align:center; background-color:#f0f0f0; padding:10px; display:inline-block;">
   <img src="images/ContainerVsVirtualMachine.png" alt="VM vs Containers" style="width:850px; height:auto;">
 </div>
+
 
 ### Architecture
 
