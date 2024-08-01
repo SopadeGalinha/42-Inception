@@ -181,3 +181,247 @@ Debian is a widely used and stable Linux distribution known for its robustness a
     </tr>
   </tbody>
 </table>
+
+---
+
+### General Purposes and Use Cases
+
+- **Alpine**: Alpine Linux is ideal for minimalism, particularly suited for microservices or single-purpose containers. Its small image size and focus on security make it a great choice for edge computing and container orchestration platforms like Kubernetes.
+
+- **Debian**: Debian is a versatile and robust choice for a wide range of applications. Its extensive package repository and compatibility with various software make it well-suited for general-purpose containers, especially in traditional server environments.
+
+The decision between Alpine and Debian hinges on specific needs such as image size, compatibility, and the required software. For this project, I choose Debian for two main reasons:
+
+1. **Versatility**: Debian supports a wide range of features and is compatible with various tools and software, which is advantageous for me in completing all project requirements, including the bonuses I want to do.
+   
+2. **Documentation**: Say what you want, but Debian has been, overtime, more used elsewhere and, therefore, more documentated. You can find just about anything for Debian troubleshooting, which makes this whole ordeal much easier.
+
+### Pre-Requisites
+
+Now, let's prepare to the fun part. Before we can start working on the project, though, we need to set up our environment, and that said the environment consists of a Virtual Machine and Docker installed on it.
+
+For this, the initial setup consists of only two downloadables:
+
+-	**VirtualBox**: VirtualBox is a general-purpose full virtualizer, aimed at enabling users to run multiple operating systems in virtual machines. For this project, we will be using VirtualBox to run a Debian system on top of our own OS.
+
+-	**Debian**: Debian is an open-source operating system that runs from the desktop, to the cloud, to all your internet connected things. We will be using Debian inside our VirtualBox to run the project.
+
+I will not be covering the installation of these two, as they are pretty straightforward and widely available online. If you encounter any issues, numerous tutorials can guide you through the process.
+
+### Setting up Virtual Machine
+
+Feel free to configure your VM according to your own preferences and requirements; this configuration is just a personal example. Here’s how I set mine up:
+
+Here’s the complete text incorporating your VM configuration along with the additional details on APT repository configuration, Guest Additions setup, SSH usage, and Docker installation. This text should help communicate the setup and customization process clearly:
+
+---
+
+
+### VM Configuration
+
+This part is totally personal and you can feel free to configure your VM according to your preferences;
+this is just an example of how I set mine up. 
+
+- **Virtualization Platform:** VirtualBox
+- **ISO Image:** Debian 11.9.0 (amd64) – Chosen as the penultimate stable version for this setup.
+- **Username:** sopadegalinha
+- **Password:** ********
+- **Hostname:** Inception
+- **Domain Name:** myguest.virtualbox.org
+- **Install in Background:** Off
+- **Guest Additions:** Off *(To be installed later)*
+- **Base Memory:** 8192 MB
+- **Processors:** 7
+- **Enable EFI:** Off
+- **Disk Size:** 20 GB
+- **Pre-allocate Full Size:** Off
+- **VM Size:** 25 GB *(More than enough for the project)*
+
+### APT Repository Configuration
+
+The **`apt`** configuration file (`/etc/apt/sources.list`) specifies the repositories from which Debian retrieves software packages and updates. Each repository section serves a distinct purpose to ensure the system has access to necessary software components and updates.
+
+- **Create:** `/etc/apt/sources.list` (if not already present)
+- **Main Repositories:** Provides essential Debian packages categorized into `main`, `contrib`, and `non-free`, including fundamental software for basic system functionality.
+- **Security Updates:** Ensures timely patches for security vulnerabilities from dedicated security repositories.
+- **Stable Updates:** Offers recommended updates that enhance system stability without compromising security.
+- **Backports:** Contains newer packages from more recent Debian releases, available for installation if needed.
+
+**/etc/apt/sources.list** content:
+
+```bash
+# Main repositories
+deb http://deb.debian.org/debian/ bullseye main contrib non-free
+deb-src http://deb.debian.org/debian/ bullseye main contrib non-free
+
+# Security updates
+deb http://security.debian.org/debian-security bullseye-security main contrib non-free
+deb-src http://security.debian.org/debian-security bullseye-security main contrib non-free
+
+# Stable updates (recommended updates that are not security-related)
+deb http://deb.debian.org/debian/ bullseye-updates main contrib non-free
+deb-src http://deb.debian.org/debian/ bullseye-updates main contrib non-free
+
+# Backports (newer packages from newer Debian versions that can be installed if needed)
+deb http://deb.debian.org/debian bullseye-backports main contrib non-free
+deb-src http://deb.debian.org/debian bullseye-backports main contrib non-free
+```
+
+**Update and Upgrade Packages:**
+
+```bash
+sudo apt update && sudo apt upgrade
+```
+
+### Guest Additions Configuration
+
+- **Download VirtualBox Guest Additions ISO:**
+  - **Website:** [VirtualBox Guest Additions](https://packages.debian.org/source/sid/virtualbox-guest-additions-iso)
+  - **File:** `virtualbox-guest-additions-iso_7.0.18.orig.tar.xz` was the latest at the time
+  - **Get the path:** Unzip the file and locate the VBoxGuestAdditions*.iso.
+
+- **Create Guest Additions Folder:**
+
+```bash
+sudo mkdir /mnt/guest_additions
+```
+
+- **Build the ISO Image:**
+
+```bash
+sudo mount -o loop <path/to/file>VBoxGuestAdditions_*.iso /mnt/guest_additions
+```
+Replace `<path/to/file>` with the actual path of the downloaded ISO for the Guest Additions.
+
+- **Navigate to the Guest Additions Folder** and execute the installation script:
+
+```bash
+sudo sh ./VBoxLinuxAdditions.run
+```
+
+- **Set Up a Shared Folder in VirtualBox Manager:**
+  - Select your VM → **Settings** → **Shared Folders**
+  - **Add a New Shared Folder:**
+    - Click the folder icon with a plus sign.
+    - **Folder Path:** Select the folder on your host machine to share.
+    - **Folder Name:** Set the name used inside the VM.
+    - **Auto-mount:** Check to automatically mount the folder when the VM starts.
+    - **Make Permanent:** Check to persist across VM reboots.
+    - Click **OK** to save the settings.
+	- Exemple
+		<div style="text-align:right; background-color:#f0f0f0; padding:10px; display:inline-block;">
+		<img src="images/sharedFolder.png" alt="VM vs Containers" style="width:300px; height:auto;">
+		</div>
+
+- **Reboot the Virtual Machine:**
+
+```bash
+sudo reboot
+```
+
+### To Use the VM via SSH (Optional)
+
+- **Install OpenSSH:**
+
+```bash
+sudo apt install openssh-server
+```
+
+- **Enable SSH:**
+
+```bash
+sudo systemctl start ssh && sudo systemctl enable ssh
+```
+
+- **Configure Network in VirtualBox Manager:**
+  - Turn off the VM → **Settings** → **Network**
+  - **Attached to:** Bridged Adapter
+  - **Name:** eno2
+  - Turn on the VM.
+
+- **Get the IP Address of the VM:**
+
+```bash
+hostname -I
+```
+
+- **Connect to the VM Using SSH:**
+
+```bash
+ssh <VM user>@<VM IP address>
+```
+---
+
+## Docker and Docker Compose Installation
+
+With the machine up and running, it’s time to install Docker and Docker Compose
+
+- **Docker:**
+  - **Remove Old Versions (Optional):**
+
+    ```bash
+    sudo apt-get remove docker docker-engine docker.io containerd runc
+    ```
+
+  - **Install Dependencies:**
+
+    ```bash
+    sudo apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+    ```
+
+  - **Add Docker GPG Official Key:**
+
+    ```bash
+    curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+    ```
+
+  - **Add the Stable Docker Repository:**
+    - For Bullseye (Debian 11):
+
+      ```bash
+      echo \
+        "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian \
+        $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+      ```
+
+  - **Install Docker Engine:**
+
+    ```bash
+    sudo apt-get update
+    sudo apt-get install docker-ce docker-ce-cli containerd.io
+    ```
+
+  - **Execute Docker Without Sudo (Optional):**
+
+    ```bash
+    sudo usermod -aG docker $USER
+    ```
+
+  - **Docker Version Used:** `docker -v` - **26.1.4, build 5650f9b**
+  - **Reboot the Virtual Machine:**
+
+    ```bash
+    sudo reboot
+    ```
+
+- **Docker Compose:**
+  - **Download the Current Stable Release:**
+
+    ```bash
+    DOCKER_COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+    sudo curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+    ```
+
+  - **Apply Executable Permissions:**
+
+    ```bash
+    sudo chmod +x /usr/local/bin/docker-compose
+    ```
+
+  - **Docker Compose Version Used:** `docker-compose -v` - **v2.27.1**
+
