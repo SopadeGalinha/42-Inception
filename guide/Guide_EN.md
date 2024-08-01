@@ -154,7 +154,7 @@ Alpine Linux is a lightweight and security-oriented Linux distribution designed 
 Debian is a widely used and stable Linux distribution known for its robustness and extensive package repository.
 
 <p style="background-color:white;">
-  <img src="images/debian_logo.png" alt="Virtual Machine vs Containers">
+  <img src="images/debian_logo.png" alt="Debian Logo" style="width:400px; height:auto;">
 </p>
 
 
