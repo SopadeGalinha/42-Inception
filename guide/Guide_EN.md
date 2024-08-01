@@ -50,9 +50,10 @@ Docker enhances the development lifecycle by enabling continuous integration and
 
 Both containers and virtual machines (VMs) are technologies used to create isolated environments for running applications. While they share some similarities, they differ in several fundamental ways.
 
-<p style="background-color:white;">
-  <img src="images/ContainerVsVirtualMachine.png" alt="Virtual Machine vs Containers">
-</p>
+<div style="text-align:center; background-color:#f0f0f0; padding:10px; display:inline-block;">
+  <img src="images/ContainerVsVirtualMachine.png" alt="VM vs Containers" style="width:850px; height:auto;">
+</div>
+
 
 ### Architecture
 
@@ -120,9 +121,9 @@ For this project, we'll select a Linux distribution for both the Virtual Machine
 
 Alpine Linux is a lightweight and security-oriented Linux distribution designed for efficiency and simplicity.
 
-<p style="background-color:white;">
-  <img src="images/alpine_logo.jpg" alt="Virtual Machine vs Containers">
-</p>
+<div style="text-align:center; background-color:white; padding:10px;">
+  <img src="images/alpine_logo.jpg" alt="Alpine Logo" style="width:750px; height:auto;">
+</div>
 
 <table>
   <thead>
