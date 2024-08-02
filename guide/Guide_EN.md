@@ -210,17 +210,10 @@ I will not be covering the installation of these two, as they are pretty straigh
 
 ### Setting up Virtual Machine
 
-Feel free to configure your VM according to your own preferences and requirements; this configuration is just a personal example. Here’s how I set mine up:
-
-Here’s the complete text incorporating your VM configuration along with the additional details on APT repository configuration, Guest Additions setup, SSH usage, and Docker installation. This text should help communicate the setup and customization process clearly:
-
----
-
-
-### VM Configuration
-
 This part is totally personal and you can feel free to configure your VM according to your preferences;
 this is just an example of how I set mine up. 
+
+### VM Configuration
 
 - **Virtualization Platform:** VirtualBox
 - **ISO Image:** Debian 11.9.0 (amd64) – Chosen as the penultimate stable version for this setup.
