@@ -1,23 +1,16 @@
 NAME			= Inception
-USER			= sopadegalinha
+USER			= jhogonca
 
 SYSTEM_USER		= $(shell whoami)
 DOCKER_CONFIG 	= $(shell echo $$HOME)/.docker
 
 SRC_DIR			= ./srcs
-VOL_DIR			= /home/$(USER)/data
+VOL_DIR			= /home/$(SYSTEM_USER)/data
 
 WP_NAME			= wordpress
 MDB_NAME		= mariadb
 
-all:		volumes hosts up
-			@echo "\n"
-			@echo "${GREEN}#-------------------------------------------------------------------------------#${NC}"
-			@echo "${GREEN}#\t\tWelcome to ${NAME} by ${USER}\t\t\t\t#${NC}"
-			@echo "${GREEN}#\t\tWordpress is running at ${USER}.42.fr\t\t\t\t#${NC}"
-			@echo "${GREEN}#\t\tTo access wordpress admin, go to ${USER}.42.fr/wp-admin\t#${NC}"
-			@echo "${GREEN}#-------------------------------------------------------------------------------#${NC}"
-			@echo "\n"
+all:		volumes hosts up help
 
 volumes:
 			@echo "${YELLOW}-----Creating Docker Volumes-----${NC}"
@@ -45,16 +38,6 @@ down:
 			@echo "${GREEN}-----Docker Stopped-----${NC}"
 
 clean:		down
-			@echo "${YELLOW}-----Removing Docker Volumes-----${NC}"
-			docker volume rm ${WP_NAME}
-			sudo rm -rf /home/$(USER)/data/${WP_NAME}
-			docker volume rm ${MDB_NAME}
-			sudo rm -rf /home/$(USER)/data/${MDB_NAME}
-			@echo "${RED}-----Volumes Removed-----${NC}"
-			@echo "${YELLOW}-----Removing domain name from hosts file-----${NC}"
-			sudo sed -i '/127\.0\.0\.1\t${USER}\.42\.fr/d' /etc/hosts
-			@echo "${RED}-----Hosts file edited-----${NC}"
-			@docker system prune -af
 
 re:			down all
 
@@ -80,25 +63,55 @@ compose:
 			@echo "${YELLOW}-----Updating Docker Compose to V2-----${NC}"
 			sudo apt -y install curl
 			mkdir -p ${DOCKER_CONFIG}/cli-plugins
-			curl -SL https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-linux-x86_64 -o ${DOCKER_CONFIG}/cli-plugins/docker-compose
+			curl -SL https://github.com/docker/compose/releases/download/v2.2.3/docker-compose-linux-x86_64 \
+					-o ${DOCKER_CONFIG}/cli-plugins/docker-compose
 			chmod +x ${DOCKER_CONFIG}/cli-plugins/docker-compose
 			sudo mkdir -p /usr/local/lib/docker/cli-plugins
 			sudo mv /home/${SYSTEM_USER}/.docker/cli-plugins/docker-compose /usr/local/lib/docker/cli-plugins/docker-compose
 			@echo "${GREEN}-----Docker Compose updated-----${NC}"
 
 status:
-			@echo "$(BOLD)=== Docker Status ===$(NC)"
-			@echo "$(BOLD)Containers:$(NC)"
-			@docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"
-			@echo "$(BOLD)Volumes:$(NC)"
-			@docker volume ls
-			@echo "$(BOLD)Images:$(NC)"
-			@docker images
-			@echo "$(BOLD)Networks:$(NC)"
-			@docker network ls
-			@echo "$(BOLD)=== End of Docker Status ===$(NC)"
+	clear
+		@echo "$(BOLD)\t\t=== Docker Status ===$(NC)"
+		@echo "$(BOLD)\nNetworks:$(NC)"
+		@docker network ls
+		
+		@echo "$(BOLD)\nVolumes:$(NC)"
+		@docker volume ls
+
+		@echo "$(BOLD)\nContainers:$(NC)"
+		@docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"
+		
+
+		
+		@echo "$(BOLD)\nImages:$(NC)"
+		@docker images
+		
+		@echo "$(BOLD)\n\t\t=== End of Docker Status ===$(NC)\n"
+
+help:
+	clear
+	@echo "${GREEN}#-----------------------------------------------------------------------#${NC}"
+	@echo "${GREEN}#\tWelcome to ${NAME} by ${USER}\t\t\t\t\t#${NC}"
+	@echo "${GREEN}#\tWordpress is running at ${USER}.42.fr\t\t\t\t#${NC}"
+	@echo "${GREEN}#\tTo access wordpress admin, go to ${USER}.42.fr/wp-admin\t#${NC}"
+	@echo "${GREEN}#\tTo access Adminer, go to ${USER}.42.fr/adminer.php\t\t#${NC}"
+	@echo "${GREEN}#\tTo access The static website, go to ${USER}.42.fr/static\t#${NC}"
+	@echo "${GREEN}#\tTo access The CAdvisor, go to ${USER}.42.fr:8080\t\t#${NC}"
+	@echo "${GREEN}#-----------------------------------------------------------------------#${NC}"
+	@echo "\n"
 
 fclean: clean
+			@echo "${YELLOW}-----Removing Docker Volumes-----${NC}"
+			docker volume rm ${WP_NAME}
+			sudo rm -rf /home/$(SYSTEM_USER)/data/${WP_NAME}
+			docker volume rm ${MDB_NAME}
+			sudo rm -rf /home/$(SYSTEM_USER)/data/${MDB_NAME}
+			@echo "${RED}-----Volumes Removed-----${NC}"
+			@echo "${YELLOW}-----Removing domain name from hosts file-----${NC}"
+			sudo sed -i '/127\.0\.0\.1\t${USER}\.42\.fr/d' /etc/hosts
+			@echo "${RED}-----Hosts file edited-----${NC}"
+			@docker system prune -af
 			@if [ -n "$$(docker ps -qa)" ]; then docker stop $$(docker ps -qa); fi
 			@if [ -n "$$(docker ps -qa)" ]; then docker rm -f $$(docker ps -qa); fi
 			@if [ -n "$$(docker images -q)" ]; then docker rmi -f $$(docker images -q); fi
@@ -108,6 +121,9 @@ fclean: clean
 			fi
 			@docker system prune -af
 			@sudo rm -rf $(APP_PATH)
+
+certificate:
+	openssl s_client -connect $(USER).42.fr:443
 
 PHONY:		all clean re prepare update compose status fclean
 
