@@ -1,0 +1,146 @@
+version: "3.8"
+
+# Volumes
+volumes:
+  mariadb:
+    name: mariadb
+    external: true
+  wordpress:
+    name: wordpress
+    external: true
+
+# Networks
+networks:
+  inception:
+    name: inception
+    driver: bridge
+
+# Services (Containers)
+services:
+  mariadb:
+    container_name: mariadb
+    image: mariadb:42
+    init: true
+    build:
+      context: ./requirements/mariadb
+      dockerfile: Dockerfile
+      args:
+        - MYSQL_DATABASE
+        - MYSQL_USER
+        - MYSQL_PASSWORD
+        - MYSQL_ROOT_PASSWORD
+    networks:
+      - inception
+    volumes:
+      - mariadb:/var/lib/mysql
+    restart: always
+
+  wordpress:
+    container_name: wordpress
+    image: wordpress:42
+    init: true
+    build:
+      context: ./requirements/wordpress
+      dockerfile: Dockerfile
+      args:
+        - MYSQL_DATABASE
+        - MYSQL_USER
+        - MYSQL_PASSWORD
+    networks:
+      - inception
+    volumes:
+      - wordpress:/var/www/html
+    restart: always
+    depends_on:
+      - mariadb
+
+  nginx:
+    container_name: nginx
+    image: nginx:42
+    init: true
+    build:
+      context: ./requirements/nginx
+      dockerfile: Dockerfile
+      args:
+        - DOMAIN_NAME
+        - CERTS_KEY
+        - CERTS_CRT
+    networks:
+      - inception
+    ports:
+      - "443:443"
+    volumes:
+      - wordpress:/var/www/html
+    restart: always
+    depends_on:
+      - mariadb
+      - wordpress
+
+  redis:
+    container_name: redis
+    image: redis:42
+    init: true
+    build:
+      context: ./requirements/bonus/redis-cache
+      dockerfile: Dockerfile
+    networks:
+      - inception
+    restart: always
+    depends_on:
+      - nginx
+
+  ftp:
+    container_name: ftp
+    image: ftp:42
+    init: true
+    build:
+      context: ./requirements/bonus/ftp-server
+      dockerfile: Dockerfile
+      args:
+        - FTP_USER
+        - FTP_PASSWORD
+    networks:
+      - inception
+    volumes:
+      - wordpress:/home/$FTP_USER/ftp
+    ports:
+      - "20:20"
+      - "21:21"
+      - "21000-21010:21000-21010"
+    restart: always
+    depends_on:
+      - nginx
+  cadvisor:
+    container_name: cadvisor
+    image: cadvisor:42
+    init: true
+    build:
+      context: ./requirements/bonus/cAdvisor
+      dockerfile: Dockerfile
+    networks:
+      - inception
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    restart: always
+    depends_on:
+      - nginx
+  
+  adminer:
+    container_name: adminer
+    image: adminer:42
+    init: true
+    build:
+      context: ./requirements/bonus/adminer
+      dockerfile: Dockerfile
+    networks:
+      - inception
+    volumes:
+      - wordpress:/var/www/html
+    restart: always
+    depends_on:
+      - wordpress
