@@ -70,7 +70,8 @@ services:
     ports:
       - "443:443"
     volumes:
-      - wordpress:/var/www/html
+      - wordpress:/var/www/html 
+      - static:/var/www/html/static
     restart: always
     depends_on:
       - mariadb
@@ -110,6 +111,7 @@ services:
     restart: always
     depends_on:
       - nginx
+ 
   cadvisor:
     container_name: cadvisor
     image: cadvisor:42
@@ -144,3 +146,16 @@ services:
     restart: always
     depends_on:
       - wordpress
+
+  static:
+    container_name: static
+    image: static:42
+    init: true
+    build:
+      context: ./requirements/bonus/static-website
+      dockerfile: Dockerfile
+    networks:
+      - inception
+    volumes:
+      - static:/usr/src/app
+    restart: always

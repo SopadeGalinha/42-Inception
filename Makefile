@@ -9,6 +9,7 @@ VOL_DIR			= /home/$(SYSTEM_USER)/data
 
 WP_NAME			= wordpress
 MDB_NAME		= mariadb
+STATIC_NAME		= static
 
 all:		volumes hosts up help
 
@@ -18,6 +19,8 @@ volumes:
 			sudo docker volume create --driver local --opt type=none --opt device=${VOL_DIR}/${WP_NAME} --opt o=bind ${WP_NAME}
 			sudo mkdir -p ${VOL_DIR}/${MDB_NAME}
 			sudo docker volume create --driver local --opt type=none --opt device=${VOL_DIR}/${MDB_NAME} --opt o=bind ${MDB_NAME}
+			sudo mkdir -p ${VOL_DIR}/static
+			sudo docker volume create --driver local --opt type=none --opt device=${VOL_DIR}/static --opt o=bind ${STATIC_NAME}
 			@echo "${GREEN}-----Volumes Created-----${NC}"
 
 hosts:
@@ -107,6 +110,8 @@ fclean: clean
 			sudo rm -rf /home/$(SYSTEM_USER)/data/${WP_NAME}
 			docker volume rm ${MDB_NAME}
 			sudo rm -rf /home/$(SYSTEM_USER)/data/${MDB_NAME}
+			docker volume rm ${STATIC_NAME}
+			sudo rm -rf /home/$(SYSTEM_USER)/data/${STATIC_NAME}
 			@echo "${RED}-----Volumes Removed-----${NC}"
 			@echo "${YELLOW}-----Removing domain name from hosts file-----${NC}"
 			sudo sed -i '/127\.0\.0\.1\t${USER}\.42\.fr/d' /etc/hosts
@@ -128,8 +133,8 @@ certificate:
 PHONY:		all clean re prepare update compose status fclean
 
 # Colors
+NC = \033[0m
 RED = \033[0;31m
 GREEN = \033[0;32m
 YELLOW = \033[0;33m
-NC = \033[0m
 BOLD = \033[1m
