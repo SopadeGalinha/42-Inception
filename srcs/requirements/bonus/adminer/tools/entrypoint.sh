@@ -11,4 +11,4 @@ chown www-data:www-data /var/www/html/adminer.php
 chmod 755 /var/www/html/adminer.php
 
 # Start php-fpm
-php-fpm -F
+php-fpm7.4 -F
