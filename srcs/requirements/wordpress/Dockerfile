@@ -7,8 +7,8 @@ ARG         MYSQL_USER
 ARG         MYSQL_PASSWORD
 
 # Update and upgrade system & install MariaDB client, php-fpm and php-mysql and wget
-RUN         apt -y update && apt -y upgrade
-RUN         apt -y install wget php7.4-fpm php7.4-mysql mariadb-client
+RUN         apt-get -y update && apt-get -y upgrade
+RUN         apt-get -y install wget php7.4-fpm php7.4-mysql mariadb-client
 
 ##################  BONUS  ##################
 ################ Redis Cache ################
@@ -41,6 +41,8 @@ RUN         chown -R www-data:www-data /var/www/html/wp-content/uploads/
 # Copy Entrypoint script
 COPY        ./tools/entrypoint.sh /usr/local/bin/
 RUN         chmod 755 /usr/local/bin/entrypoint.sh
+
+WORKDIR /var/www/html
 
 # Run php-fpm
 ENTRYPOINT  [ "bash", "/usr/local/bin/entrypoint.sh" ]

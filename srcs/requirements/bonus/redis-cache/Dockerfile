@@ -1,8 +1,8 @@
 FROM        debian:bullseye
 
 # Update and upgrade system & install Redis
-RUN         apt -y update && apt -y upgrade
-RUN         apt -y install redis-server redis-tools
+RUN         apt-get -y update && apt-get -y upgrade
+RUN         apt-get -y install redis-server redis-tools
 
 # Expose port
 EXPOSE      6379

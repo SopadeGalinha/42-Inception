@@ -2,8 +2,8 @@
 FROM 		debian:bullseye
 
 # Update and upgrade system & install wget
-RUN 		apt -y update && apt -y upgrade
-RUN 		apt -y install wget 
+RUN 		apt-get -y update && apt-get -y upgrade
+RUN 		apt-get -y install wget 
 
 # Change working directory
 WORKDIR		/usr/local/bin

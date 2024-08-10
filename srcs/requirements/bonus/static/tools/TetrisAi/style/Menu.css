@@ -1,0 +1,100 @@
+body {
+    background-image: url('../logo/back2.jpg');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    
+    
+  }
+
+.menu {   
+    width: 300pt;
+    height: 500pt;
+    background-color: rgba(0,0,0,0.3);
+    box-shadow: 0 0 10px 2px rgb(255,255,255);
+    position: absolute;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+      
+    margin: auto;
+}
+
+.header{
+    width: 100%;
+    height: 5%;
+    
+    border-style: 1px solid;
+    margin: 0 auto;
+    position: relative;
+}
+
+.title {
+    width: 80%;
+    height: 40%;
+  
+    
+    margin: 0 auto;
+    position: relative;
+}
+
+.logo{
+    width:100%;
+    height: 95%;
+    opacity: 0.8;
+}
+
+.buttons {
+    width: 80%;
+    height: 50%;
+    
+    
+    margin: 0 auto;
+    position: relative;
+    flex-direction: column;
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+}
+
+.run_ai {
+    width: 80%;
+    height: 15%;
+    background-color: transparent;
+    margin: 10%;
+   
+}
+.AI{
+    width: 100%;
+    height: 100%;
+    font-size: 45px;
+    background-color: rgba(255,255,255,0.1);
+    border: none;
+    color: rgb(255,255,255);
+    
+}
+
+.footer{
+    width: 100%;
+    height: 7%;
+    
+    text-align: center;
+    position: absolute; 
+    bottom: 0;
+    color:rgb(255,255,255);
+}
+
+.mode{
+    width: 10%;
+    height: 100%;
+
+    position: absolute;
+    right:0;
+}
+
+.dark-mode {
+    background-color: black;
+    color: white;
+    
+}

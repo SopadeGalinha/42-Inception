@@ -82,8 +82,6 @@ status:
 		@echo "$(BOLD)\nContainers:$(NC)"
 		@docker ps -a --format "table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}"
 		
-
-		
 		@echo "$(BOLD)\nImages:$(NC)"
 		@docker images
 		
@@ -92,11 +90,11 @@ status:
 help:
 	clear
 	@echo "${GREEN}#-----------------------------------------------------------------------#${NC}"
-	@echo "${GREEN}#\tWelcome to ${NAME} by ${USER}\t\t\t\t\t#${NC}"
+	@echo "${GREEN}#\tWelcome to ${NAME} by ${USER}\t\t\t\t#${NC}"
 	@echo "${GREEN}#\tWordpress is running at ${USER}.42.fr\t\t\t\t#${NC}"
 	@echo "${GREEN}#\tTo access wordpress admin, go to ${USER}.42.fr/wp-admin\t#${NC}"
 	@echo "${GREEN}#\tTo access Adminer, go to ${USER}.42.fr/adminer.php\t\t#${NC}"
-	@echo "${GREEN}#\tTo access The static website, go to ${USER}.42.fr/static\t#${NC}"
+	@echo "${GREEN}#\tTo access The static website, go to ${USER}.42.fr:7777\t\t#${NC}"
 	@echo "${GREEN}#\tTo access The CAdvisor, go to ${USER}.42.fr:8080\t\t#${NC}"
 	@echo "${GREEN}#-----------------------------------------------------------------------#${NC}"
 	@echo "\n"

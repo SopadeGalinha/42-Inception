@@ -8,8 +8,8 @@ ARG         MYSQL_PASSWORD
 ARG         MYSQL_ROOT_PASSWORD
 
 # Update and upgrade system & install MariaDB
-RUN         apt -y update && apt -y upgrade
-RUN         apt -y install mariadb-server mariadb-client
+RUN         apt-get -y update && apt-get -y upgrade
+RUN         apt-get -y install mariadb-server mariadb-client
 
 #allow mysqld daemon to run, purge and recreate /var/lib/mysql with appropriate ownership
 RUN			mkdir -p /var/lib/mysql /var/run/mysqld

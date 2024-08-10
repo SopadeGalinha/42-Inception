@@ -1,8 +1,12 @@
-# Use a imagem base Debian Bullseye
 FROM debian:bullseye
 
-# Crie o diretório para os arquivos estáticos
-RUN mkdir -p /var/www/html/static
+# Update System and Install Tools
+RUN apt-get update
+RUN apt-get install -y nodejs npm
 
-# Copie os arquivos estáticos para o diretório
-COPY static /var/www/html/static
+ADD ./tools/TetrisAi .
+
+ADD ./tools/index.html .
+ADD ./tools/*.js .
+
+CMD node site.js

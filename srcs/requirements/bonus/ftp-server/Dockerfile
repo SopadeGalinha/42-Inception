@@ -10,8 +10,8 @@ ENV         FTP_USER=${FTP_USER}
 ENV         FTP_PASSWORD=${FTP_PASSWORD}
 
 # Update and upgrade system & install FTP
-RUN         apt -y update && apt -y upgrade
-RUN         apt -y install vsftpd ftp
+RUN         apt-get -y update && apt-get -y upgrade
+RUN         apt-get -y install vsftpd ftp
 
 # Set up FTP
 COPY        ./conf/vsftpd.conf /usr/local/bin/

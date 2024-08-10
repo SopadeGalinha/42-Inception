@@ -110,6 +110,7 @@ services:
     restart: always
     depends_on:
       - nginx
+
   cadvisor:
     container_name: cadvisor
     image: cadvisor:42
@@ -144,3 +145,15 @@ services:
     restart: always
     depends_on:
       - wordpress
+
+  static:
+    container_name: static
+    build: requirements/bonus/static/
+    image: static
+    networks:
+      - inception
+    ports:
+      - "7777:7777"
+    restart: always
+    env_file:
+      - .env
